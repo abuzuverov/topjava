@@ -4,7 +4,7 @@ import ru.javawebinar.topjava.dao.MealDao;
 import ru.javawebinar.topjava.dao.MealDaoMock;
 import ru.javawebinar.topjava.model.Meal;
 
-import java.util.List;
+import java.util.Collection;
 
 public class MealServiceImpl implements MealService {
     private MealDao mealDao;
@@ -14,27 +14,22 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<Meal> getAllMeals() {
-        return mealDao.getAllMeals();
+    public Collection<Meal> getAll() {
+        return mealDao.getAll();
     }
 
     @Override
-    public Meal getMealById(int id) {
-        return mealDao.getMealById(id);
+    public Meal get(int id) {
+        return mealDao.get(id);
     }
 
     @Override
-    public void deleteMeal(int id) {
-        mealDao.deleteMeal(id);
+    public void delete(int id) {
+        mealDao.delete(id);
     }
 
     @Override
-    public void addMeal(Meal meal) {
-        mealDao.addMeal(meal);
-    }
-
-    @Override
-    public void updateMeal(int id, Meal meal) {
-        mealDao.updateMeal(id, meal);
+    public void save(Meal meal) {
+        mealDao.save(meal);
     }
 }

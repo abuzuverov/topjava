@@ -30,7 +30,7 @@
     </style>
 </head>
 <body>
-<h3><a href="../../index.html">Назад</a></h3>
+<h3><a href="index.html">Назад</a></h3>
 <h2>Моя еда</h2>
 <a href="<c:url value="/meals?action=add"/>">Добавить</a>
 <table>
@@ -38,6 +38,7 @@
         <th>Дата/Время</th>
         <th>Описание</th>
         <th>Калории</th>
+        <th style="width:100px"></th>
         <th style="width:100px"></th>
     </tr>
     <c:if test="${!empty meals}" >
@@ -50,13 +51,11 @@
                     <tr class="tbr" style="color: green">
                 </c:otherwise>
             </c:choose>
-                <td>${meal.getDateTime().toLocalDate()} ${meal.getDateTime().toLocalTime()}</td>
+                <td>${meal.getDateTime().toLocalDate()} ${meal.getDateTime().toLocalDate()}</td>
                 <td>${meal.getDescription()}</td>
                 <td>${meal.getCalories()}</td>
-                <td>
-                    <a href="<c:url value="/meals?action=edit&id=${meal.id}"/>">Редактировать</a>
-                    <a href="<c:url value="/meals?action=delete&id=${meal.id}"/>">Удалить</a>
-                </td>
+                <td><a href="<c:url value="/meals?action=edit&id=${meal.id}"/>">Редактировать</a></td>
+                <td><a href="<c:url value="/meals?action=delete&id=${meal.id}"/>">Удалить</a></td>
             </tr>
         </c:forEach>
     </c:if>

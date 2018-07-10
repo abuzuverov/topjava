@@ -16,22 +16,25 @@
 <body>
 <h2>Добавление еды</h2>
 <a href="meals">Назад</a>
-<form name="mealAddform" method="post" action="meals?action=addSubmit">
+<form method="post" action="meals">
+    <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
+    <input type="hidden" name="id" value="${meal.id}">
     <table>
         <tr>
             <td>Дата/Время</td>
-            <td><input type="datetime-local" name="datetime" id="datetime"></td>
+            <td><input type="datetime-local" name="dateTime" value="${meal.dateTime}" required></td>
         </tr>
         <tr>
             <td>Описание</td>
-            <td><input type="text" name="description" id="description"></td>
+            <td><input type="text" name="description" id="description" value="${meal.description}" required></td>
         </tr>
         <tr>
             <td>Калории</td>
-            <td><input type="number" name="calories" id="calories"></td>
+            <td><input type="number" name="calories" id="calories" value="${meal.calories}" required></td>
         </tr>
     </table>
-    <input type="submit" value="Добавить">
+    <button onclick="window.history.back()" type="button">Отмена</button>
+    <button type="submit">Сохранить</button>
 </form>
 </body>
 </html>
