@@ -2,9 +2,19 @@ package ru.javawebinar.topjava.util;
 
 
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
+import ru.javawebinar.topjava.model.Role;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ValidationUtil {
+
+    public static final List<User> USERS = Arrays.asList(
+            new User(null, "admin", "admin@mail.ru", "", Role.ROLE_ADMIN, Role.ROLE_USER),
+            new User(null, "user", "user@mail.ru", "", Role.ROLE_USER)
+    );
 
     public static <T> T checkNotFoundWithId(T object, int id) {
         return checkNotFound(object, "id=" + id);
