@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 @Repository
 public class InMemoryUserRepositoryImpl implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepositoryImpl.class);
+
+    public static final int USER_ID = 1;
+    public static final int ADMIN_ID = 2;
+
     private Map<Integer, User> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -28,8 +32,7 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        repository.remove(id);
-        return true;
+        return repository.remove(id) != null;
     }
 
     @Override
@@ -39,14 +42,15 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
             user.setId(counter.incrementAndGet());
             repository.put(user.getId(), user);
             return user;
-        } else {
+        } /*else {
             User newUser = repository.get(user.getId());
             newUser.setName(user.getName());
             newUser.setEmail(user.getEmail());
             newUser.setPassword(user.getPassword());
             repository.put(user.getId(), newUser);
             return newUser;
-        }
+        }*/
+        return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
     @Override
@@ -59,13 +63,16 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         return repository.values().stream()
-                .sorted(Comparator.comparing(AbstractNamedEntity::getName))
+                .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
     }
 
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        return null;
+        return repository.values().stream()
+                .filter(user -> email.equals(user.getEmail()))
+                .findFirst()
+                .orElse(null);
     }
 }
