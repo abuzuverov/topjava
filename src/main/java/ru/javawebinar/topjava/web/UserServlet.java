@@ -74,7 +74,7 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
+        /*request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
 
         User user = new User(id.isEmpty() ? null : Integer.valueOf(id),
@@ -88,7 +88,10 @@ public class UserServlet extends HttpServlet {
         } else {
             controller.update(user, getId(request));
         }
-        response.sendRedirect("users");
+        response.sendRedirect("users");*/
+        int userId = Integer.parseInt(request.getParameter("userId"));
+        SecurityUtil.setAuthUserId(userId);
+        response.sendRedirect("meals");
     }
 
     private int getId(HttpServletRequest request) {
