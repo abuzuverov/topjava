@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.repository.mock;
 
+import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import ru.javawebinar.topjava.model.Meal;
@@ -11,10 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.repository.mock.InMemoryUserRepositoryImpl.USER_ID;
 
 @Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
+    private static final Logger log = getLogger(InMemoryMealRepositoryImpl.class);
+
     private Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -27,10 +31,12 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
         Map<Integer, Meal> meals = repository.computeIfAbsent(userId, ConcurrentHashMap::new);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
+            log.info("create {} for user with id={}", meal, userId);
             meals.put(meal.getId(), meal);
             return meal;
         }
         // treat case: update, but absent in storage
+        log.info("update {} for user with id={}", meal, userId);
         return meals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 

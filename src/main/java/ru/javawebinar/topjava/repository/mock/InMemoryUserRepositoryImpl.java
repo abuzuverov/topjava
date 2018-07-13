@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.repository.mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import ru.javawebinar.topjava.model.AbstractNamedEntity;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.ValidationUtil;
@@ -19,8 +18,8 @@ import java.util.stream.Collectors;
 public class InMemoryUserRepositoryImpl implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepositoryImpl.class);
 
-    public static final int USER_ID = 1;
-    public static final int ADMIN_ID = 2;
+    public static final int ADMIN_ID = 1;
+    public static final int USER_ID = 2;
 
     private Map<Integer, User> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
@@ -37,19 +36,14 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        log.info("save {}", user);
         if (user.isNew()) {
             user.setId(counter.incrementAndGet());
+            log.info("create {}", user);
             repository.put(user.getId(), user);
+            log.info("repo: {}", repository);
             return user;
-        } /*else {
-            User newUser = repository.get(user.getId());
-            newUser.setName(user.getName());
-            newUser.setEmail(user.getEmail());
-            newUser.setPassword(user.getPassword());
-            repository.put(user.getId(), newUser);
-            return newUser;
-        }*/
+        }
+        log.info("update {}", user);
         return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
@@ -61,10 +55,11 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> getAll() {
-        log.info("getAll");
-        return repository.values().stream()
+        List<User> users = repository.values().stream()
                 .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
+        log.info("getAll {}", users);
+        return users;
     }
 
     @Override
