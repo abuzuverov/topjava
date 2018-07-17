@@ -6,7 +6,8 @@ import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
 public class SecurityUtil {
 
-    private static int id = AbstractBaseEntity.START_SEQ;
+    //private static int id = AbstractBaseEntity.START_SEQ;
+    private static int id = 100001;
 
     public static int authUserId() {
         return id;
