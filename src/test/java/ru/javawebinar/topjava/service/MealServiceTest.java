@@ -9,14 +9,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.web.meal.MealRestController;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
+import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
@@ -33,40 +36,56 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        /*Meal newMeal = new Meal(LocalDateTime.now(), "New meal", 555);
-        int newId = service.create(newMeal, USER_ID).getId();
-        assertEquals(newMeal, service.get((newId), USER_ID));*/
-        //assertThat
+        assertThat(service.get(MEAL_2.getId(), USER_ID)).isEqualToComparingFieldByField(MEAL_2);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void getNotFound() throws Exception {
+        service.get(MEAL_2.getId(), ADMIN_ID);
     }
 
     @Test
     public void delete() {
-        List<Meal> before = service.getAll(USER_ID);
-        Meal created = service.create(new Meal(LocalDateTime.now(), "New meal", 555), USER_ID);
-        service.delete(created.getId(), USER_ID);
-        assertEquals(before, service.getAll(USER_ID));
+        service.delete(MEAL_2.getId(), USER_ID);
+        assertThat(service.getAll(USER_ID)).doesNotContain(MEAL_2);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteNotFound() throws Exception {
+        service.delete(MEAL_2.getId(), ADMIN_ID);
     }
 
     @Test
-    public void getBetweenDates() {
-    }
-
-    @Test
-    public void getBetweenDateTimes() {
+    public void getBetween() {
+        List<Meal> between = service.getBetweenDates(
+                LocalDate.of(2018, 5, 30),
+                LocalDate.of(2018,5,30),
+                USER_ID);
+        List<Meal> expected = Arrays.asList(MEAL_4, MEAL_3, MEAL_2);
+        assertThat(between).usingFieldByFieldElementComparator().isEqualTo(expected);
     }
 
     @Test
     public void getAll() {
+        assertThat(service.getAll(USER_ID)).usingFieldByFieldElementComparator().isEqualTo(MEALS);
     }
 
     @Test
     public void update() {
+        Meal updated = new Meal(MEAL_2.getId(), LocalDateTime.now(), "Updated meal", 555);
+        service.update(updated, USER_ID);
+        assertThat(service.get(MEAL_2.getId(), USER_ID)).isEqualToComparingFieldByField(updated);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateNotFound() throws Exception {
+        service.update(MEAL_2, ADMIN_ID);
     }
 
     @Test
     public void create() {
         Meal newMeal = new Meal(LocalDateTime.now(), "New meal", 555);
         int newId = service.create(newMeal, USER_ID).getId();
-        assertEquals(newMeal, service.get((newId), USER_ID));
+        assertThat(service.get(newId, USER_ID)).isEqualToComparingFieldByField(newMeal);
     }
 }

@@ -28,7 +28,7 @@ public abstract class AbstractBaseEntity {
     }
 
 
-    @Override
+/*    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -43,5 +43,5 @@ public abstract class AbstractBaseEntity {
     @Override
     public int hashCode() {
         return id == null ? 0 : id;
-    }
+    }*/
 }
