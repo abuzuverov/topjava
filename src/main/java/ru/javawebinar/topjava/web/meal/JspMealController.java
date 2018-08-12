@@ -10,45 +10,50 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Controller
+@RequestMapping("/meals")
 public class JspMealController {
 
     @Autowired
     private MealService service;
 
-    @GetMapping("/meals")
+    @GetMapping("")
     public String meals(Model model) {
         int userId = SecurityUtil.authUserId();
         model.addAttribute("meals", MealsUtil.getWithExceeded(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay()));
         return "meals";
     }
 
-    @GetMapping("/meals/create")
+    @GetMapping("create")
     public ModelAndView createView() {
-        Meal meal = new Meal(LocalDateTime.now(), "", 1000);
+        Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         return new ModelAndView("mealSpringForm", "meal", meal);
     }
 
-    @GetMapping("/meals/update")
+    @GetMapping("update")
     public ModelAndView updateView(@RequestParam(value = "id") int id) {
         return new ModelAndView("mealSpringForm", "meal", service.get(id, SecurityUtil.authUserId()));
     }
 
-    @PostMapping("/meals/submit")
-    public String submit(@ModelAttribute("meal") Meal meal) {
-        if (meal.isNew()) {
+    @PostMapping("submit")
+    public String submit(@RequestParam String id,
+                         @RequestParam String dateTime,
+                         @RequestParam String description,
+                         @RequestParam int calories) {
+        Meal meal = new Meal(LocalDateTime.parse(dateTime), description, calories);
+        if (id.isEmpty()) {
             service.create(meal, SecurityUtil.authUserId());
         } else {
+            meal.setId(Integer.parseInt(id));
             service.update(meal, SecurityUtil.authUserId());
         }
         return "redirect:/meals";
     }
 
-    @GetMapping("/meals/delete")
+    @GetMapping("delete")
     public String delete(@RequestParam(value = "id") int id) {
         service.delete(id, SecurityUtil.authUserId());
         return "redirect:/meals";
