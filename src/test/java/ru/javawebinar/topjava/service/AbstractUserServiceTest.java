@@ -22,18 +22,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     protected UserService service;
 
-    @Autowired
-    private CacheManager cacheManager;
-
-    @Autowired
-    protected JpaUtil jpaUtil;
-
-    @Before
-    public void setUp() throws Exception {
-        cacheManager.getCache("users").clear();
-        jpaUtil.clear2ndLevelHibernateCache();
-    }
-
     @Test
     public void create() throws Exception {
         User newUser = new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.ROLE_USER));
